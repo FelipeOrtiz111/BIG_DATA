@@ -52,6 +52,13 @@ def run_pipeline(args, beam_args):
     n_words = args.n_palabras
     show_output = args.muestra_salida
 
+    if not input_file:
+        raise ValueError("El argumento '--entrada' es requerido.")
+    if not output_file:
+        raise ValueError("El argumento '--salida' es requerido.")
+    if n_words is None:
+        raise ValueError("El argumento '--n-palabras' es requerido.")
+
     opts = PipelineOptions(beam_args)
 
     with beam.Pipeline(options=opts) as p:
