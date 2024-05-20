@@ -26,7 +26,7 @@ def run_pipeline(input_url, output_path, project, region):
         project=project,
         region=region,
         temp_location='gs://bucket_gtfs/temp/',
-        requirements_file='requirements.txt' 
+        requirements_file='gs://bucket_gtfs/requirements.txt/' 
     )
 
     with beam.Pipeline(options=options) as p:
