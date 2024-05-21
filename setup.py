@@ -1,12 +1,12 @@
-import requests
-from bs4 import BeautifulSoup
+from setuptools import setup, find_packages
 
-def test_requests():
-    url = "https://www.dtpm.cl/index.php/noticias/gtfs-vigente"
-    response = requests.get(url)
-    if response.status_code == 200:
-        print("Solicitud exitosa")
-    else:
-        print("Error en la solicitud")
-
-test_requests()
+setup(
+    name='dataflow_pipeline',
+    version='0.1',
+    packages=find_packages(),
+    install_requires=[
+        'apache-beam[gcp]',
+        'requests',
+        'beautifulsoup4'
+    ]
+)

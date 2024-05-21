@@ -1,0 +1,3 @@
+[console_scripts]
+rf = rf.batch:run_cli
+rf-runtests = rf.tests:run
