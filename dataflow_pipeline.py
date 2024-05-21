@@ -3,6 +3,9 @@ import apache_beam as beam
 import requests
 from bs4 import BeautifulSoup
 from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.io.filesystems import FileSystems
+import zipfile
+import io
 
 # Configuración de la variable de entorno GOOGLE_APPLICATION_CREDENTIALS
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/feli_ortiz/redmetropolitana-423718-5b99a8e04165.json'
@@ -30,6 +33,24 @@ class WebScrapeFn(beam.DoFn):
         else:
             yield "No se encontró el enlace al archivo"
 
+# Clase para descomprimir el archivo ZIP y subirlo a GCS
+class UnzipAndUploadFn(beam.DoFn):
+    def process(self, element, output_path):
+        if isinstance(element, bytes):
+            # Utilizamos un buffer en memoria para el archivo zip
+            with zipfile.ZipFile(io.BytesIO(element), 'r') as z:
+                for file_info in z.infolist():
+                    with z.open(file_info) as f:
+                        file_name = file_info.filename
+                        file_content = f.read()
+                        # Ruta completa del archivo en el bucket
+                        file_path = f"{output_path}/{file_name}"
+                        with FileSystems.create(file_path) as gcs_file:
+                            gcs_file.write(file_content)
+            yield f"Archivo {output_path} descomprimido y cargado a GCS"
+        else:
+            yield element
+
 # Función principal para ejecutar el pipeline
 def run_pipeline(input_url, output_path, project, region):
     options = PipelineOptions(
@@ -48,12 +69,12 @@ def run_pipeline(input_url, output_path, project, region):
             p
             | "Create Input" >> beam.Create([input_url])
             | "Web Scraping" >> beam.ParDo(WebScrapeFn())
-            | "Write to GCS" >> beam.io.WriteToText(output_path)
+            | "Unzip and Upload" >> beam.ParDo(UnzipAndUploadFn(), output_path=output_path)
         )
 
 if __name__ == '__main__':
     input_url = None  # No se utiliza, ya que el URL está definido dentro de la función de WebScrapeFn
-    output_path = 'gs://bucket_gtfs/out/GTFS_Diarios.zip'
+    output_path = 'gs://bucket_gtfs/out/GTFS_Diarios'
     project = 'redmetropolitana-423718'
     region = 'us-central1'
     
