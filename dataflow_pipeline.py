@@ -1,9 +1,14 @@
+import os
 import apache_beam as beam
 import requests
 from bs4 import BeautifulSoup
 from apache_beam.options.pipeline_options import PipelineOptions
 
+# Configuración de la variable de entorno GOOGLE_APPLICATION_CREDENTIALS
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/feli_ortiz/redmetropolitana-423718-5b99a8e04165.json'
 
+
+# Definición de la función DoFn para la extracción de datos
 class WebScrapeFn(beam.DoFn):
     def process(self, element):
         # solicitud http a la página
@@ -25,16 +30,18 @@ class WebScrapeFn(beam.DoFn):
         else:
             yield "No se encontró el enlace al archivo"
 
+# Función principal para ejecutar el pipeline
 def run_pipeline(input_url, output_path, project, region):
     options = PipelineOptions(
         flags=[],
         runner='DataflowRunner',
         project=project,
         region=region,
-        temp_location='gs://bucket_gtfs/temp/',
-        requirements_file='./requirements.txt',
-        setup_file='./setup.py'
-    )
+        temp_location='gs://bucket_gtfs/temp/',        
+        job_name='gtfs-datos-diarios',
+        staging_location='gs://bucket_gtfs/staging/',
+        save_main_session=True,
+     )
 
     with beam.Pipeline(options=options) as p:
         _ = (
@@ -46,7 +53,7 @@ def run_pipeline(input_url, output_path, project, region):
 
 if __name__ == '__main__':
     input_url = None  # No se utiliza, ya que el URL está definido dentro de la función de WebScrapeFn
-    output_path = 'gs://bucket_gtfs/out/output.txt'
+    output_path = 'gs://bucket_gtfs/out/GTFS_Diarios.zip'
     project = 'redmetropolitana-423718'
     region = 'us-central1'
     
