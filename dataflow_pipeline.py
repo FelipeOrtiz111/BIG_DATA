@@ -39,6 +39,7 @@ class UnzipAndUploadFn(beam.DoFn):
         if isinstance(element, bytes):
             # Utilizamos un buffer en memoria para el archivo zip
             with zipfile.ZipFile(io.BytesIO(element), 'r') as z:
+                # itera sobre cada archivo dentro del zip
                 for file_info in z.infolist():
                     with z.open(file_info) as f:
                         file_name = file_info.filename
