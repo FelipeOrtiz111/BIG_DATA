@@ -7,9 +7,6 @@ from apache_beam.io.filesystems import FileSystems
 import zipfile
 import io
 
-# Configuración de la variable de entorno GOOGLE_APPLICATION_CREDENTIALS
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/feli_ortiz/redmetropolitana-423718-5b99a8e04165.json'
-
 
 # Definición de la función DoFn para la extracción de datos
 class WebScrapeFn(beam.DoFn):
@@ -59,9 +56,9 @@ def run_pipeline(input_url, output_path, project, region):
         runner='DataflowRunner',
         project=project,
         region=region,
-        temp_location='gs://bucket_gtfs/temp/',        
+        temp_location='gs://gtfs_bucket1/temp/',        
         job_name='gtfs-datos-diarios',
-        staging_location='gs://bucket_gtfs/staging/',
+        staging_location='gs://gtfs_bucket1/staging/',
         save_main_session=True,
      )
 
@@ -75,7 +72,7 @@ def run_pipeline(input_url, output_path, project, region):
 
 if __name__ == '__main__':
     input_url = None  # No se utiliza, ya que el URL está definido dentro de la función de WebScrapeFn
-    output_path = 'gs://bucket_gtfs/out/GTFS_Diarios'
+    output_path = 'gs://gtfs_bucket1/out/GTFS_Diarios'
     project = 'redmetropolitana-423718'
     region = 'us-central1'
     
