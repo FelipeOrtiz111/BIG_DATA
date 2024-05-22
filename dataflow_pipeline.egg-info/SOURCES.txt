@@ -1,7 +1,0 @@
-README.md
-setup.py
-dataflow_pipeline.egg-info/PKG-INFO
-dataflow_pipeline.egg-info/SOURCES.txt
-dataflow_pipeline.egg-info/dependency_links.txt
-dataflow_pipeline.egg-info/requires.txt
-dataflow_pipeline.egg-info/top_level.txt
