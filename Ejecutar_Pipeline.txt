@@ -1,0 +1,18 @@
+gcloud config set project redmetropolitana-423718
+gcloud config set compute/region us-central1
+python3 -m venv myenv
+source myenv/bin/actívate
+============================
+pip install --upgrade pip setuptools
+pip install apache-beam[gcp]
+======================================================================================================
+gsutil cp gs://gtfs_bucket1/gtfs_historico.py .
+======================================================================================================
+python gtfs_historico.py \
+    --project redmetropolitana-423718 \
+    --runner DataflowRunner \
+    --job_name gtfs-datos-historicos \
+    --staging_location gs://gtfs_bucket1/staging \
+    --temp_location gs://gtfs_bucket1/temp \
+    --output_prefix gs://gtfs_bucket1/Datos_Historicos \
+    --input_url https://us-central1-duoc-bigdata-sc-2023-01-01.cloudfunctions.net/datos_transporte_et
